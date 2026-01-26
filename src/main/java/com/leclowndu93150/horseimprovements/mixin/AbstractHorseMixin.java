@@ -145,6 +145,7 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
     private void horseimprovements$checkRiderStatus(CallbackInfo ci) {
         if (horseimprovements$wasBeingRidden && this.getControllingPassenger() == null) {
             horseimprovements$wasBeingRidden = false;
+            horseimprovements$currentSpeed = 0.0f;
         }
     }
 }
