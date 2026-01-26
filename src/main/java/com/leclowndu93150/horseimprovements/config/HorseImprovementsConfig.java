@@ -21,6 +21,8 @@ public class HorseImprovementsConfig {
     public static float deceleration = 0.08f;
     public static float headBobIntensity = 0.15f;
     public static float headBobFrequency = 0.5f;
+    public static float horseHeadBobIntensity = 0.15f;
+    public static float horseHeadBobFrequency = 0.8f;
 
     public static void load() {
         if (Files.exists(CONFIG_PATH)) {
@@ -31,6 +33,8 @@ public class HorseImprovementsConfig {
                 deceleration = getFloat(json, "deceleration", deceleration);
                 headBobIntensity = getFloat(json, "headBobIntensity", headBobIntensity);
                 headBobFrequency = getFloat(json, "headBobFrequency", headBobFrequency);
+                horseHeadBobIntensity = getFloat(json, "horseHeadBobIntensity", horseHeadBobIntensity);
+                horseHeadBobFrequency = getFloat(json, "horseHeadBobFrequency", horseHeadBobFrequency);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -45,6 +49,8 @@ public class HorseImprovementsConfig {
         json.addProperty("deceleration", deceleration);
         json.addProperty("headBobIntensity", headBobIntensity);
         json.addProperty("headBobFrequency", headBobFrequency);
+        json.addProperty("horseHeadBobIntensity", horseHeadBobIntensity);
+        json.addProperty("horseHeadBobFrequency", horseHeadBobFrequency);
 
         try (Writer writer = Files.newBufferedWriter(CONFIG_PATH)) {
             GSON.toJson(json, writer);

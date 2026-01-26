@@ -27,7 +27,9 @@ public abstract class CameraMixin {
         if (this.entity == null) return;
 
         Entity vehicle = this.entity.getVehicle();
-        if (!(vehicle instanceof AbstractHorse)) return;
+        if (!(vehicle instanceof AbstractHorse horse)) return;
+
+        if (!horse.onGround()) return;
 
         float currentSpeed = HorseRidingData.getCurrentSpeed();
         if (currentSpeed < 0.01f) return;
