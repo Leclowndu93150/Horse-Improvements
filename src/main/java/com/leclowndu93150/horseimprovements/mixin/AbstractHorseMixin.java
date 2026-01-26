@@ -58,7 +58,9 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
         float strafeInput = horseimprovements$lastStrafeInput;
         float forwardInput = horseimprovements$lastForwardInput;
 
-        boolean isMoving = horseimprovements$currentSpeed > 0.01f || forwardInput != 0;
+        boolean isActuallyMoving = this.walkAnimation.isMoving();
+        boolean wantsToMove = forwardInput != 0;
+        boolean isMoving = isActuallyMoving || wantsToMove;
         boolean isTurning = Math.abs(strafeInput) > 0.01f;
 
         if (isMoving || isTurning) {
