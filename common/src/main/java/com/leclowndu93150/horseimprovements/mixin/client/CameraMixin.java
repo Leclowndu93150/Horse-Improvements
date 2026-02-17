@@ -19,7 +19,7 @@ public abstract class CameraMixin {
     private Entity entity;
 
     @Shadow
-    protected abstract void move(double d, double e, double f);
+    protected abstract void move(float f, float f1, float f2);
 
     @Inject(method = "setup", at = @At("RETURN"))
     private void immersive_horse_riding$addHeadBob(BlockGetter blockGetter, Entity entity, boolean detached, boolean thirdPerson, float partialTick, CallbackInfo ci) {
@@ -41,6 +41,6 @@ public abstract class CameraMixin {
         float smoothTick = animTick + partialTick;
         float bobOffset = (float) -Math.cos(smoothTick * frequency) * intensity * currentSpeed;
 
-        this.move(0, bobOffset, 0);
+        this.move(0.0F, bobOffset, 0.0F);
     }
 }
