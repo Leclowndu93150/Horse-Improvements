@@ -55,6 +55,7 @@ publishMods {
     file = remapJar.archiveFile
     changelog = "Release for Minecraft ${minecraft_version}"
     type = STABLE
+    displayName = "${mod_id}-${minecraft_version}-Fabric"
     modLoaders.add("fabric")
 
     curseforge {
@@ -63,5 +64,12 @@ publishMods {
         projectId = "1453947"
         minecraftVersions.add("${minecraft_version}")
         javaVersions.add(JavaVersion.VERSION_21)
+    }
+
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+            .orElse(provider { rootProject.ext.modrinthToken })
+        projectId = "MmgRSJ2v"
+        minecraftVersions.add("${minecraft_version}")
     }
 }

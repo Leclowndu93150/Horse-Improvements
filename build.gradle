@@ -13,4 +13,5 @@ if (envFile.exists()) {
 
 ext {
     curseforgeToken = System.getenv('CURSEFORGE_TOKEN') ?: envProps.getProperty('CURSEFORGE_TOKEN', '')
+    modrinthToken = System.getenv('MODRINTH_TOKEN') ?: envProps.getProperty('MODRINTH_TOKEN', '')
 }
