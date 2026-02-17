@@ -1,7 +1,7 @@
 plugins {
     id 'fabric-loom' version '1.8-SNAPSHOT' apply false
     id 'net.neoforged.moddev' version '2.0.49-beta' apply false
-    id 'net.darkhax.curseforgegradle' version '1.1.25' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '1.1.0' apply false
 }
 
 // Load .env file for secrets (CurseForge token, etc.)
@@ -13,11 +13,4 @@ if (envFile.exists()) {
 
 ext {
     curseforgeToken = System.getenv('CURSEFORGE_TOKEN') ?: envProps.getProperty('CURSEFORGE_TOKEN', '')
-    curseforgeProjectId = 1453947
-}
-
-tasks.register('publishAllCurseForge') {
-    group = 'publishing'
-    description = 'Publish all loader jars to CurseForge'
-    dependsOn ':fabric:publishCurseForge', ':forge:publishCurseForge', ':neoforge:publishCurseForge'
 }

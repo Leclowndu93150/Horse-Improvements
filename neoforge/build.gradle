@@ -1,7 +1,11 @@
 plugins {
     id 'multiloader-loader'
     id 'net.neoforged.moddev'
-    id 'net.darkhax.curseforgegradle'
+    id 'me.modmuss50.mod-publish-plugin'
+}
+
+base {
+    archivesName = "${mod_id}-${minecraft_version}-NeoForge"
 }
 
 neoForge {
@@ -55,19 +59,17 @@ repositories {
     maven { url = "https://maven.enjarai.dev/mirrors" }
 }
 
-// CurseForge Publishing
-task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
-    group = 'publishing'
-    description = 'Publish NeoForge jar to CurseForge'
-    dependsOn jar
+publishMods {
+    file = jar.archiveFile
+    changelog = "Release for Minecraft ${minecraft_version}"
+    type = STABLE
+    modLoaders.add("neoforge")
 
-    apiToken = rootProject.ext.curseforgeToken
-
-    def mainFile = upload(rootProject.ext.curseforgeProjectId, jar)
-    mainFile.releaseType = 'release'
-    mainFile.addModLoader('NeoForge')
-    mainFile.addGameVersion("${minecraft_version}")
-    mainFile.addJavaVersion('Java 21')
-    mainFile.changelog = 'Release for Minecraft ' + minecraft_version
-    mainFile.changelogType = 'text'
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+            .orElse(provider { rootProject.ext.curseforgeToken })
+        projectId = "1453947"
+        minecraftVersions.add("${minecraft_version}")
+        javaVersions.add(JavaVersion.VERSION_21)
+    }
 }
