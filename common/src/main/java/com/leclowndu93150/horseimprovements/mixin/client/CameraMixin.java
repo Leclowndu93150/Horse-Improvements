@@ -4,8 +4,8 @@ import com.leclowndu93150.horseimprovements.HorseRidingData;
 import com.leclowndu93150.horseimprovements.config.HorseImprovementsConfig;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,13 +22,14 @@ public abstract class CameraMixin {
     protected abstract void move(float f, float f1, float f2);
 
     @Inject(method = "setup", at = @At("RETURN"))
-    private void immersive_horse_riding$addHeadBob(BlockGetter blockGetter, Entity entity, boolean detached, boolean thirdPerson, float partialTick, CallbackInfo ci) {
+    private void immersive_horse_riding$addHeadBob(Level level, Entity entity, boolean detached, boolean thirdPerson, float partialTick, CallbackInfo ci) {
         if (detached || thirdPerson) return;
         if (this.entity == null) return;
 
         Entity vehicle = this.entity.getVehicle();
         if (!(vehicle instanceof AbstractHorse horse)) return;
 
+        if (!horse.isSaddled()) return;
         if (horse.isJumping()) return;
 
         float currentSpeed = HorseRidingData.getCurrentSpeed();

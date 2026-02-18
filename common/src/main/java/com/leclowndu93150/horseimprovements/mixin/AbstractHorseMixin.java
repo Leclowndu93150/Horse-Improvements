@@ -8,7 +8,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
@@ -94,7 +94,7 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
             cir.setReturnValue(new Vec2(player.getXRot() * 0.5f, this.getYRot()));
         }
 
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             HorseRidingData.setCurrentSpeed(immersive_horse_riding$currentSpeed);
             HorseRidingData.setAnimTick(immersive_horse_riding$animTick);
         }

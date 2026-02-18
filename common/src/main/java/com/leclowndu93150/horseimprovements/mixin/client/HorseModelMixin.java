@@ -1,50 +1,39 @@
 package com.leclowndu93150.horseimprovements.mixin.client;
 
 import com.leclowndu93150.horseimprovements.config.HorseImprovementsConfig;
-import net.minecraft.client.model.HorseModel;
+import net.minecraft.client.model.animal.equine.AbstractEquineModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.EquineRenderState;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(HorseModel.class)
-public class HorseModelMixin<T extends AbstractHorse> {
+@Mixin(AbstractEquineModel.class)
+public class HorseModelMixin<T extends EquineRenderState> {
 
     @Shadow
     protected ModelPart headParts;
 
-    @Unique
-    private float immersive_horse_riding$savedLimbSwing;
-
-    @Unique
-    private float immersive_horse_riding$savedLimbSwingAmount;
-
-    @Inject(method = "prepareMobModel(Lnet/minecraft/world/entity/animal/horse/AbstractHorse;FFF)V",
-            at = @At("HEAD"))
-    private void immersive_horse_riding$captureParams(T horse, float limbSwing, float limbSwingAmount, float partialTick, CallbackInfo ci) {
-        this.immersive_horse_riding$savedLimbSwing = limbSwing;
-        this.immersive_horse_riding$savedLimbSwingAmount = limbSwingAmount;
-    }
-
-    @Inject(method = "prepareMobModel(Lnet/minecraft/world/entity/animal/horse/AbstractHorse;FFF)V",
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/EquineRenderState;)V",
             at = @At("RETURN"))
-    private void immersive_horse_riding$adjustHeadBob(T horse, float limbSwing, float limbSwingAmount, float partialTick, CallbackInfo ci) {
-        if (limbSwingAmount <= 0.2F) return;
+    private void immersive_horse_riding$adjustHeadBob(T state, CallbackInfo ci) {
+        float animationSpeed = state.walkAnimationSpeed;
+        float animationPos = state.walkAnimationPos;
 
-        float standAnim = horse.getStandAnim(partialTick);
-        float eatAnim = horse.getEatAnim(partialTick);
-        if (standAnim > 0 || eatAnim > 0) return;
+        if (animationSpeed <= 0.2F) return;
 
-        float vanillaBob = Mth.cos(immersive_horse_riding$savedLimbSwing * 0.8F) * 0.15F * immersive_horse_riding$savedLimbSwingAmount;
+        float standing = state.standAnimation;
+        float eating = state.eatAnimation;
+        if (standing > 0 || eating > 0) return;
 
-        float customBob = Mth.cos(immersive_horse_riding$savedLimbSwing * HorseImprovementsConfig.horseHeadBobFrequency)
+        float vanillaBob = Mth.cos(animationPos * 0.8F) * 0.15F * animationSpeed;
+
+        float customBob = Mth.cos(animationPos * HorseImprovementsConfig.horseHeadBobFrequency)
                 * HorseImprovementsConfig.horseHeadBobIntensity
-                * immersive_horse_riding$savedLimbSwingAmount;
+                * animationSpeed;
 
         this.headParts.xRot = this.headParts.xRot - vanillaBob + customBob;
     }

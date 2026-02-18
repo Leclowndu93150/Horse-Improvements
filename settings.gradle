@@ -11,6 +11,8 @@ pluginManagement {
             }
             filter {
                 includeGroup('net.fabricmc')
+                includeGroup('net.fabricmc.unpick')
+                includeGroup('net.fabricmc.fabric-loom-remap')
                 includeGroup('fabric-loom')
             }
         }
@@ -25,22 +27,15 @@ pluginManagement {
                 includeGroupAndSubgroups("org.spongepowered")
             }
         }
-        exclusiveContent {
-            forRepository {
-                maven {
-                    name = 'Forge'
-                    url = uri('https://maven.minecraftforge.net')
-                }
-            }
-            filter {
-                includeGroupAndSubgroups('net.minecraftforge')
-            }
+        maven {
+            name = 'Forge'
+            url = uri('https://maven.minecraftforge.net')
         }
     }
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
 rootProject.name = 'horseimprovements'
