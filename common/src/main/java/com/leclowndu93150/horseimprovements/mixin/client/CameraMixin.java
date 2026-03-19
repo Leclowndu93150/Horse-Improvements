@@ -1,6 +1,6 @@
 package com.leclowndu93150.horseimprovements.mixin.client;
 
-import com.leclowndu93150.horseimprovements.HorseRidingData;
+import com.leclowndu93150.horseimprovements.HorseAccessor;
 import com.leclowndu93150.horseimprovements.config.HorseImprovementsConfig;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
@@ -32,10 +32,10 @@ public abstract class CameraMixin {
         if (!horse.isSaddled()) return;
         if (horse.isJumping()) return;
 
-        float currentSpeed = HorseRidingData.getCurrentSpeed();
+        float currentSpeed = ((HorseAccessor) horse).immersive_horse_riding$getCurrentSpeed();
         if (currentSpeed < 0.01f) return;
 
-        int animTick = HorseRidingData.getAnimTick();
+        int animTick = ((HorseAccessor) horse).immersive_horse_riding$getAnimTick();
         float intensity = HorseImprovementsConfig.headBobIntensity;
         float frequency = HorseImprovementsConfig.headBobFrequency;
 
