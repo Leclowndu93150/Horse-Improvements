@@ -1,7 +1,6 @@
 package com.leclowndu93150.horseimprovements.mixin;
 
 import com.leclowndu93150.horseimprovements.HorseAccessor;
-import com.leclowndu93150.horseimprovements.HorseRidingData;
 import com.leclowndu93150.horseimprovements.config.HorseImprovementsConfig;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.util.Mth;
@@ -92,11 +91,6 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
             immersive_horse_riding$animTick = 0;
             immersive_horse_riding$targetYRot = this.getYRot();
             cir.setReturnValue(new Vec2(player.getXRot() * 0.5f, this.getYRot()));
-        }
-
-        if (this.level().isClientSide()) {
-            HorseRidingData.setCurrentSpeed(immersive_horse_riding$currentSpeed);
-            HorseRidingData.setAnimTick(immersive_horse_riding$animTick);
         }
     }
 
