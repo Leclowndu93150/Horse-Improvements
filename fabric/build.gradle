@@ -14,11 +14,15 @@ dependencies {
     implementation project(":common")
     include(modImplementation("io.github.llamalad7:mixinextras-fabric:0.5.3"))
     include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.7-beta.1")))
+
+    modImplementation("curse.maven:horseman-1082085:7650571")
+    modImplementation("curse.maven:forge-config-api-port-547434:7260491")
 }
 
 repositories {
     maven { url = "https://maven.bawnorton.com/releases" }
     maven { url = "https://maven.enjarai.dev/mirrors" }
+    maven { url = "https://cursemaven.com" }
 }
 
 loom {
