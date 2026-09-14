@@ -20,6 +20,8 @@ public class HorseModelMixin<T extends EquineRenderState> {
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/EquineRenderState;)V",
             at = @At("RETURN"))
     private void immersive_horse_riding$adjustHeadBob(T state, CallbackInfo ci) {
+        if (!HorseImprovementsConfig.horseHeadBobbing) return;
+
         float animationSpeed = state.walkAnimationSpeed;
         float animationPos = state.walkAnimationPos;
 

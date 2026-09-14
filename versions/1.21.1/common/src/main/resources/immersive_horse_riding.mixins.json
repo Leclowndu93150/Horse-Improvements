@@ -9,7 +9,9 @@
         "AbstractHorseMixin"
     ],
     "client": [
-        "client.CameraMixin",
+        "client.BetterThirdPersonPlayerAdapterMixin",
+        "client.CameraInvoker",
+        "client.GameRendererMixin",
         "client.HorseModelMixin"
     ],
     "injectors": {

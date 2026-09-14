@@ -28,3 +28,17 @@ type = "required"
 versionRange = "[${minecraft_version},27.0)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "baguettelib"
+type = "required"
+versionRange = "[2.0.5,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange = "[3.9.6,)"
+ordering = "AFTER"
+side = "CLIENT"

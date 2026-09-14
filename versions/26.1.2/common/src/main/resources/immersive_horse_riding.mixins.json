@@ -9,6 +9,7 @@
         "AbstractHorseMixin"
     ],
     "client": [
+        "client.BetterThirdPersonPlayerAdapterMixin",
         "client.CameraMixin",
         "client.HorseModelMixin"
     ],

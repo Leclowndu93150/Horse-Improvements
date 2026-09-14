@@ -2,6 +2,8 @@ package com.leclowndu93150.horseimprovements.mixin;
 
 import com.leclowndu93150.horseimprovements.HorseAccessor;
 import com.leclowndu93150.horseimprovements.HorseRidingData;
+import com.leclowndu93150.horseimprovements.compat.CameraCompat;
+import com.leclowndu93150.horseimprovements.compat.RawMovementInput;
 import com.leclowndu93150.horseimprovements.config.HorseImprovementsConfig;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.util.Mth;
@@ -41,6 +43,9 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
     @Unique
     private boolean immersive_horse_riding$wasBeingRidden = false;
 
+    @Unique
+    private boolean immersive_horse_riding$cameraSteering = false;
+
     protected AbstractHorseMixin(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
     }
@@ -67,10 +72,11 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
         float strafeInput = immersive_horse_riding$lastStrafeInput;
         float forwardInput = immersive_horse_riding$lastForwardInput;
 
+        boolean steering = immersive_horse_riding$cameraSteering;
         boolean isActuallyMoving = this.walkAnimation.isMoving();
-        boolean wantsToMove = forwardInput != 0;
+        boolean wantsToMove = steering ? (forwardInput != 0 || strafeInput != 0) : forwardInput != 0;
         boolean isMoving = isActuallyMoving || wantsToMove;
-        boolean isTurning = Math.abs(strafeInput) > 0.01f;
+        boolean isTurning = steering ? wantsToMove : Math.abs(strafeInput) > 0.01f;
 
         if (isMoving || isTurning) {
             if (isMoving) {
@@ -79,7 +85,10 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
                 immersive_horse_riding$animTick = 0;
             }
 
-            if (isTurning) {
+            if (isTurning && steering) {
+                float inputYaw = (float) Mth.atan2(-strafeInput, forwardInput) * Mth.RAD_TO_DEG;
+                immersive_horse_riding$targetYRot = Mth.wrapDegrees(player.getYRot() + inputYaw);
+            } else if (isTurning) {
                 float turnAmount = -strafeInput * HorseImprovementsConfig.turnSpeed;
                 immersive_horse_riding$targetYRot = Mth.wrapDegrees(this.getYRot() + turnAmount);
             }
@@ -87,11 +96,15 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
             float currentYRot = this.getYRot();
             float newYRot = immersive_horse_riding$rotateToward(currentYRot, immersive_horse_riding$targetYRot, HorseImprovementsConfig.turnSpeed);
 
-            cir.setReturnValue(new Vec2(player.getXRot() * 0.5f, newYRot));
+            if (HorseImprovementsConfig.turning) {
+                cir.setReturnValue(new Vec2(player.getXRot() * 0.5f, newYRot));
+            }
         } else {
             immersive_horse_riding$animTick = 0;
             immersive_horse_riding$targetYRot = this.getYRot();
-            cir.setReturnValue(new Vec2(player.getXRot() * 0.5f, this.getYRot()));
+            if (HorseImprovementsConfig.turning) {
+                cir.setReturnValue(new Vec2(player.getXRot() * 0.5f, this.getYRot()));
+            }
         }
 
         if (this.level().isClientSide) {
@@ -105,12 +118,23 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
         float forwardInput = player.zza;
         float strafeInput = player.xxa;
 
+        immersive_horse_riding$cameraSteering = HorseImprovementsConfig.turning && HorseImprovementsConfig.cameraSteering;
+
+        if (!immersive_horse_riding$cameraSteering && this.level().isClientSide && CameraCompat.isThirdPersonModActive()) {
+            Vec2 rawInput = RawMovementInput.get();
+            forwardInput = rawInput.y;
+            strafeInput = rawInput.x;
+        }
+
         immersive_horse_riding$lastForwardInput = forwardInput;
         immersive_horse_riding$lastStrafeInput = strafeInput;
 
-        float targetSpeed = forwardInput > 0 ? 1.0f : 0.0f;
+        boolean accelerating = immersive_horse_riding$cameraSteering ? (forwardInput != 0 || strafeInput != 0) : forwardInput > 0;
+        float targetSpeed = accelerating ? 1.0f : 0.0f;
 
-        if (immersive_horse_riding$currentSpeed < targetSpeed) {
+        if (!HorseImprovementsConfig.smoothAcceleration) {
+            immersive_horse_riding$currentSpeed = targetSpeed;
+        } else if (immersive_horse_riding$currentSpeed < targetSpeed) {
             immersive_horse_riding$currentSpeed = Math.min(
                     immersive_horse_riding$currentSpeed + HorseImprovementsConfig.acceleration,
                     targetSpeed
@@ -123,13 +147,13 @@ public abstract class AbstractHorseMixin extends Animal implements HorseAccessor
         }
 
         float forwardMovement;
-        if (forwardInput < 0) {
-            forwardMovement = forwardInput * 0.25f;
+        if (forwardInput < 0 && !immersive_horse_riding$cameraSteering) {
+            forwardMovement = forwardInput * HorseImprovementsConfig.reverseSpeed;
         } else {
             forwardMovement = immersive_horse_riding$currentSpeed;
         }
 
-        return new Vec3(0, original.y, forwardMovement);
+        return new Vec3(HorseImprovementsConfig.turning ? 0 : original.x, original.y, forwardMovement);
     }
 
     @Unique

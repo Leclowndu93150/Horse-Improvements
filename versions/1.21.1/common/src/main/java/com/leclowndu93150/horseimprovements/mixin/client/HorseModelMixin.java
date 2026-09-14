@@ -34,6 +34,8 @@ public class HorseModelMixin<T extends AbstractHorse> {
     @Inject(method = "prepareMobModel(Lnet/minecraft/world/entity/animal/horse/AbstractHorse;FFF)V",
             at = @At("RETURN"))
     private void immersive_horse_riding$adjustHeadBob(T horse, float limbSwing, float limbSwingAmount, float partialTick, CallbackInfo ci) {
+        if (!HorseImprovementsConfig.horseHeadBobbing) return;
+
         if (limbSwingAmount <= 0.2F) return;
 
         float standAnim = horse.getStandAnim(partialTick);

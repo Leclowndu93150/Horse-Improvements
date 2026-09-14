@@ -1,16 +1,16 @@
 package com.leclowndu93150.horseimprovements.mixin.client;
 
 import com.leclowndu93150.horseimprovements.HorseRidingData;
+import com.leclowndu93150.horseimprovements.client.RiderLook;
 import com.leclowndu93150.horseimprovements.config.HorseImprovementsConfig;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Camera.class)
 public abstract class CameraMixin {
@@ -19,16 +19,24 @@ public abstract class CameraMixin {
     private Entity entity;
 
     @Shadow
-    protected abstract void move(double d, double e, double f);
+    private boolean detached;
 
-    @Inject(method = "setup", at = @At("RETURN"))
-    private void immersive_horse_riding$addHeadBob(BlockGetter blockGetter, Entity entity, boolean detached, boolean thirdPerson, float partialTick, CallbackInfo ci) {
-        if (detached || thirdPerson) return;
+    @Shadow
+    protected abstract void move(float f, float f1, float f2);
+
+    @WrapOperation(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;alignWithEntity(F)V"))
+    private void immersive_horse_riding$addHeadBob(Camera camera, float partialTick, Operation<Void> original) {
+        original.call(camera, partialTick);
+        RiderLook.followCamera(camera);
+
+        if (!HorseImprovementsConfig.cameraBobbing) return;
+        if (this.detached && !HorseImprovementsConfig.thirdPersonBobbing) return;
         if (this.entity == null) return;
 
         Entity vehicle = this.entity.getVehicle();
         if (!(vehicle instanceof AbstractHorse horse)) return;
 
+        if (!horse.isSaddled()) return;
         if (horse.isJumping()) return;
 
         float currentSpeed = HorseRidingData.getCurrentSpeed();
@@ -41,6 +49,6 @@ public abstract class CameraMixin {
         float smoothTick = animTick + partialTick;
         float bobOffset = (float) -Math.cos(smoothTick * frequency) * intensity * currentSpeed;
 
-        this.move(0, bobOffset, 0);
+        this.move(0.0F, bobOffset, 0.0F);
     }
 }
